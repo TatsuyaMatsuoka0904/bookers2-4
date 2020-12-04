@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bookers</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <header class="navbar-dark bg-dark">
+   <div class="navbar navbar-expand-lg">
+   <div class="container">
+        <%= link_to "Bookers", root_path, class:"navbar-brand" %>
+        <!--https://getbootstrap.jp/docs/4.2/components/navbar/?#color-schemes-->
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    
+  <div class="navbar-collapse collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ml-auto">
+  <!--pathじゃないとエラー出る iでロゴ判定でない-->    
+  <% if user_signed_in? %>
+      <li><%= link_to "Home", user_path(current_user.id), class:"nav-link text-white fas fa-home" %></li>
+      <li><%= link_to "Users", users_path, class:"nav-link text-white fas fa-users" %></li>
+      <li><%= link_to "Books", books_path, class:"nav-link text-white fas fa-book-open" %></li>
+      <li><%= link_to "logout", destroy_user_session_path, method: :delete, class:"nav-link text-white fas fa-sign-out-alt" %></li>
+  <% else %>
+      <li><%= link_to "Home", root_path, class:"nav-link text-white fas fa-home" %></li>
+      <li><%= link_to "About", about_path, class:"nav-link text-white fas fa-link" %></li>
+      <li><%= link_to "sign up", new_user_registration_path, class:"nav-link text-white fas fa-user-plus" %></li>
+      <li><%= link_to "login", new_user_session_path, class:"nav-link text-white fas fa-sign-in-alt" %></li>
+  <% end %>
+          </div>
+  </div>
+  </div>
+
+  </header>
+
+    <%= yield %>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="mx-auto">
+          <p col-lg-6>CopyRight Infratop.inc</p>
+          
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

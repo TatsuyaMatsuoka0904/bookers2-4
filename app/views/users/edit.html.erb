@@ -1,0 +1,50 @@
+<p id="notice"></p>
+
+<div class="container">
+  <div class="row">
+    <!-- colmd8確定で微調整していく-->
+    <div class="col-md-8 col-sm-12 px-sm-0 mx-auto">
+      <h2>User info</h2>
+  <!--これで動いた流用したとこ-->
+  <div class="errors-text">
+  <% if @user.errors.any? %>
+    <h3>
+      <%= pluralize(@user.errors.count, "error") %> prohibited this product from being saved:
+    </h3>
+    <ul>
+      <% @user.errors.full_messages.each do |message| %>
+    <li>
+      <%= message %>
+    </li>
+      <% end %>
+    </ul>
+  <% end %>
+  </div>
+  
+  <%= form_with model: @user, local:true do |f|%>
+  <!-- テキスト＋ネームでも通る？-->
+    <div class="form-group">
+      <label>Name</label>
+       <%= f.text_field :name, class:"form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <label>Image</label></br>
+      <%= f.attachment_field :profile_image %>
+    </div>
+    
+    <div class="form-group">
+      <label>Introduction</label>
+      <%= f.text_area :introduction, class:"form-control" %>
+    </div>
+    
+    <div class="form-group">
+      <%= f.submit "Update User", class:"btn btn-secondary" %>
+    </div>
+    
+  <% end %>
+  
+  
+    </div>
+  </div>
+</div>
