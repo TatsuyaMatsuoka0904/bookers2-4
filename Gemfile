@@ -74,6 +74,11 @@ gem 'bootstrap', '~> 4.5'
 gem 'jquery-rails'
 gem 'font-awesome-sass', '~> 5.13'
 
+group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
+end
+
 group :test do
   gem 'capybara', '>= 2.15'
   gem 'rspec-rails'
