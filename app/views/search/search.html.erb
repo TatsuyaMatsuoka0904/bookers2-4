@@ -13,7 +13,7 @@
     <tbody>
      <th>
       <%= link_to user_path(book.user) do %>
-       <%= attachment_image_tag book.user, :profile_image, :fill, 50, 50, format: 'jpeg', fallback: "no2_image.jpg"%>
+       <%= attachment_image_tag book.user, :profile_image, :fill, 50, 50, format: 'jpeg', fallback: "no_image.jpg"%>
       <% end %>
      </th>
      <th><%= link_to book_path(book) do %><%= book.title %><% end %></th>
@@ -36,7 +36,7 @@
     <% @user.each do |user| %>
     <tbody>
      <th><%= link_to user_path(user) do %>
-      <%= attachment_image_tag user, :profile_image, :fill, 50, 50, format: 'jpeg', fallback: "no2_image.jpg"%></th>
+      <%= attachment_image_tag user, :profile_image, :fill, 50, 50, format: 'jpeg', fallback: "no_image.jpg"%></th>
      <% end %>
      <th><%= user.name %></th>
      <th><%= link_to "Show", user_path(user) %></th>

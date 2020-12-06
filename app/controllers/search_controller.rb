@@ -1,4 +1,5 @@
 class SearchController < ApplicationController
+
   def search
       @range = params[:range]
       search = params[:search]
