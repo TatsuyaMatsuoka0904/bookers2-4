@@ -1,20 +1,18 @@
 Rails.application.routes.draw do
- devise_for :users
- root "homes#top"
- get "home/about" => "homes#about", as: :about
- get 'search/search'
- resources :users, only: [:index, :show, :edit, :update] do
-  member do
-   get :following, :followers
+  devise_for :users
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  get 'search' => 'search#search', as: 'search'
+  root :to => "homes#top"
+  get "home/about" => "homes#about"
+
+  resources :books, only: [:index, :show, :edit, :create, :destroy, :update] do
+    resource :favorites, only: [:create, :destroy]
+    resources :book_comments, only: [:create, :destroy]
   end
- end
- 
-  post 'follow/:id' => 'relationships#create', as: 'follow'
-  post 'unfollow/:id' => 'relationships#destroy', as: 'unfollow'
- resources :books do
-  
-  resource :favorites, only: [:create, :destroy]
-  resources :book_comments, only: [:create, :destroy]
- end
- 
+  resources :users, only: [:index, :show, :edit, :update] do
+    get :followings, on: :member # フォロー/フォロワー一覧ページへのルーティング、menberでidが表示されるようになり、
+    get :followers, on: :member # followings_user_pathはフォローユーザー一覧のページへ、followers_user_pathはフォロワー一覧ページへ飛ぶようになる
+  end
+  resources :relationships, only: [:create, :destroy]
 end

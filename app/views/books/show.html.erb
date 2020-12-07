@@ -1,91 +1,41 @@
-<!--saccses messsage?入れとくとEr消える-->
-<p id="notice"><%if flash[:notice] %>
-  <%= flash[:notice]  %>
-<% end %></p>
-
-
-<!--c、r、cmd3-->
-<div class="container">
-  <div class="row">
-<div class="col-md-3">
-    <%= render "layouts/form", user: @user %>
-    <%= render "layouts/create", book: @book %>
-</div>
-    <!--.container .row .col-md-8.offset-md-1-->
-<div class="col-md-8 offset-md-1">
-  <h2>Book detail</h2>
-  <table class="table">
-    
-    <tr>
-    <td>
-    <%= link_to user_path(@showbook.user) do %>
-    <%= attachment_image_tag  @showbook.user, :profile_image, size: "50x50", fallback: "no_image.jpg" %><br>
-    <%= @showbook.user.name %></br>
-    <% end %>
-    </td>
-    
-    <td>
-     <%= link_to book_path(@showbook) do %>
-     <%= @showbook.title %>
-     <% end %>
-    </td>
-    
-    <td>
-     <%= @showbook.body %>
-    </td>
-      <div class="navbar-collapse collapse" id="navbarNavDropdown">
-    <% if @showbook.favorited_by?(current_user) %>
-        <td>
-            <%= link_to book_favorites_path(@showbook.id), method: :delete do %>
-             <i class="fas fa-heart"></i><%= @showbook.favorites.count %>
-            <% end %>
-        </td>
-    <% else %>
-        <td>
-            <%= link_to book_favorites_path(@showbook), method: :post do %>
-            <i class="far fa-heart"></i><%= @showbook.favorites.count %> 
-            <% end %>
-        </td>
-    <% end %>
+<div class='container'>
+  <div class='row'>
+    <div class='col-md-3'>
+      <h2>User info</h2>
+      <%= render 'users/info', user: @book.user %>
+      <%= render 'layouts/follow_form', user: @user, follower: @follower, followed: @followed %>
+      <h2 class="mt-3">New book</h2>
+      <%= render 'books/form', book: Book.new %>
     </div>
-    
-    <td>
-     <%if @showbook.user.id == current_user.id  %>
-     <%= link_to "Edit", edit_book_path(@showbook), class:"btn btn-sm btn-success" %>
-     <% end %>
-    </td>
-    
-    <td><!--https://qiita.com/iverson3kobe0824/items/3baa1d57843fbde6cd19-->
-     <%if @showbook.user.id == current_user.id  %>
-     <%= link_to "Destroy", book_path(@showbook), method: :delete, data: { confirm: "削除しますか？" }, class:"btn btn-sm btn-danger" %>
-     <% end %>
-     
-     <td> コメント数：<%= @book.book_comments.count %></td></td>
-    </td>
-    </tr>
-    
+    <div class='col-md-8 offset-md-1'>
+  		<h2>Book detail</h2>
+  		<table class='table'>
+  		  <tr>
+  		    <td><%= link_to user_path(@book.user) do %>
+            <%= attachment_image_tag(@book.user, :profile_image, :fill, 100, 100, fallback: "no-image-icon.jpg") %><br>
+            <%= @book.user.name %>
+            <% end %>
+          </td>
+          <td><%= link_to @book.title, book_path(@book) %></td>
+          <td><%= @book.body %></td>
+          <td id="favorite-btn-<%= @book.id %>">
+            <%= render "favorites/favorite-btn", book: @book %>
+          </td>
+          <td>コメント数: <%= @book.book_comments.count %></td>
+          <% if @book.user == current_user %>
+            <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-sm btn-success edit_book_#{@book.id}" %></td>
+            <td><%= link_to 'Destroy', book_path(@book), method: :delete, data: { confirm: '本当に消しますか？' }, class: "btn btn-sm btn-danger destroy_book_#{@book.id}"%></td>
+          <% end %>
+        </tr>
       </table>
-    <table>
-    <% @showbook.book_comments.each do |book_comment| %>
-        <tbody>
-
-        <td><%= attachment_image_tag book_comment.user, :profile_image, size: "50x50", format: 'jpeg', fallback: "no_image.jpg"%></td>
-        <td><%= book_comment.comment %></td>
-    <td>
-        <% if book_comment.user == current_user %>
-        <td><%= link_to "Destroy",  book_book_comment_path(book_comment.book, book_comment), method: :delete, class:"btn-sm btn-danger destroy_book"%></td>
-        <% end %>
-    </td>
-        </tbody>
-    <% end %>
-    </table>
-    <br>
-    
-    <%= form_with(model:[@showbook, @book_comment], local: true) do |f| %>
-    <%= f.text_area :comment, rows:'5', class: "form-control"%>
-    <%= f.submit "送信", class: "pull-right" %>
-    <% end %>
+      <div id="comment_area">
+        <%= render 'books/comment', book: @book %>
+      </div>
+      <!-- remote: trueで非同期 -->
+      <%= form_with model:[@book, @book_comment], remote: true do |f| %>
+        <%= f.text_area :comment, size:"90x5" %>
+        <%= f.submit '送信'%>
+      <% end %>
     </div>
   </div>
 </div>
-

@@ -4,43 +4,41 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  has_many :books, dependent: :destroy
-  has_many :favorites, dependent: :destroy
-  has_many :book_comments, dependent: :destroy
+  has_many :books
+	has_many :favorites, dependent: :destroy
+	has_many :book_comments, dependent: :destroy
+  attachment :profile_image, destroy: false
+
+  validates :name, length: { minimum: 2, maximum: 20 }, uniqueness: true
+  validates :introduction, length: { maximum: 50 }
   
+  # フォロー取得。Relationshipモデルのfollower_idにuser_idを格納
   has_many :follower, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
-  has_many :following_user, through: :follower, source: :followed
+  # フォロワー取得。Relationshipモデルのfollowed_idにuser_idを格納
   has_many :followed, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
+  
+  # 自分がフォローしているユーザ情報を取得。user.followed_user
+  has_many :followed_user, through: :follower, source: :followed
+  # 自分をフォローしているユーザ情報を取得。user.follower_user
   has_many :follower_user, through: :followed, source: :follower
   
-  attachment :profile_image
-  
-  def follow(user_id)
-    follower.create(followed_id: user_id)
+  # すでにフォロー済みであればture返す
+  def following?(other_user)
+    self.followed_user.include?(other_user)
   end
-  
-  def unfollow(user_id)
-    follower.find_by(followed_id: user_id).destroy
-  end
-  
-  def following?(user)
-    following_user.include?(user)
-  end
-  
-  def self.search(search,word)
-    if search == "forward_match"
-      @user = User.where("name LIKE?","#{word}%")
-    elsif search == "backward_match"
-      @user = User.where("name LIKE?","%#{word}")
-    elsif search == "perfect_match"
-      @user = User.where("name LIKE?","#{word}")
-    elsif search == "partial_match"
-      @user = User.where("name LIKE?","%#{word}%")
-    else
-      @user = User.all
+
+  #ユーザーをフォローする
+  def follow(other_user)
+    # 自分がフォローしようとしているユーザーではない場合にture
+    unless self == other_user
+      self.follower.find_or_create_by(followed_id: other_user.id)
     end
   end
-  
-  validates :name, length: { in: 2..20 }, uniqueness: true
-  validates :introduction, length: { maximum: 50 }
+
+  #ユーザーのフォローを解除する
+  def unfollow(other_user)
+    # followed_idカラムをfind_byで検索し、other_user.idが存在していれば取得
+    following = self.follower.find_by(followed_id: other_user.id)
+    following.destroy if follower
+  end
 end
